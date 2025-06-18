@@ -1,0 +1,112 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.0'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'checkstyle'
+	id 'jacoco'
+}
+
+group = 'com.gradle.student'
+version = '1.0.0-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('mapstructVersion', "1.6.3")
+	set('r2dbcMysql', "1.0.4")
+	set('jakartaValidationVersion', "3.0.2")
+	set('jakartaElApi', "6.0.1")
+	set('hibernateValidatorVersion', "8.0.1.Final")
+	set('expresslyVersion', "5.0.0")
+	set('dotenvJavaVersion', "3.0.0")
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation "io.asyncer:r2dbc-mysql:${r2dbcMysql}"
+	implementation "jakarta.validation:jakarta.validation-api:${jakartaValidationVersion}"
+	implementation "jakarta.el:jakarta.el-api:${jakartaElApi}"
+	implementation "org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}"
+	implementation "org.glassfish.expressly:expressly:${expresslyVersion}"
+	implementation "io.github.cdimascio:dotenv-java:${dotenvJavaVersion}"
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	compileOnly "org.mapstruct:mapstruct:${mapstructVersion}"
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.annotationProcessorPath = configurations.annotationProcessor
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+checkstyle {
+	toolVersion = '9.3'
+	configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+	configProperties = [
+			'checkstyle.suppressions.file': file('config/checkstyle/suppressions.xml')
+	]
+}
+
+tasks.withType(Checkstyle).configureEach {
+	ignoreFailures = false // Falla el build si hay errores
+	showViolations = true
+}
+
+jacoco {
+	toolVersion = "0.8.11"
+}
+
+jacocoTestReport {
+	dependsOn test // report se genera después de ejecutar los tests
+	reports {
+		xml.required.set(true)
+		html.required.set(true)
+		csv.required.set(false)
+	}
+	classDirectories.setFrom(
+			files(classDirectories.files.collect {
+				fileTree(dir: it, exclude: [
+						'**/MsvStudentApplication.class',
+						'**/model/**',
+						'**/repository/**',
+						'**/util/**',
+						'**/config/**'
+				])
+			})
+	)
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.80 // mínimo 80% de cobertura
+			}
+		}
+	}
+}

@@ -1,0 +1,17 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: msv-student
+  r2dbc:
+    url: ${MYSQL_HOST}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+  output:
+    ansi:
+      enabled: ALWAYS
+
+logging:
+  level:
+    root: INFO

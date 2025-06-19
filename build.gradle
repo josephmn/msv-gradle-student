@@ -33,6 +33,7 @@ ext {
 	set('hibernateValidatorVersion', "8.0.1.Final")
 	set('expresslyVersion', "5.0.0")
 	set('dotenvJavaVersion', "3.0.0")
+	set('cloudVersion', "4.3.0")
 }
 
 dependencies {
@@ -43,7 +44,8 @@ dependencies {
 	implementation "jakarta.el:jakarta.el-api:${jakartaElApi}"
 	implementation "org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}"
 	implementation "org.glassfish.expressly:expressly:${expresslyVersion}"
-	implementation "io.github.cdimascio:dotenv-java:${dotenvJavaVersion}"
+	implementation "org.springframework.cloud:spring-cloud-starter-bootstrap:${cloudVersion}"
+	implementation "org.springframework.cloud:spring-cloud-starter-vault-config:${cloudVersion}"
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -91,7 +93,7 @@ jacocoTestReport {
 	classDirectories.setFrom(
 			files(classDirectories.files.collect {
 				fileTree(dir: it, exclude: [
-						'**/MsvStudentApplication.class',
+						'**/Application.class',
 						'**/model/**',
 						'**/repository/**',
 						'**/util/**',

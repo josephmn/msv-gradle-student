@@ -1,0 +1,11 @@
+.openapi-generator-ignore
+README.md
+pom.xml
+src/main/java/com/openapi/generate/api/ApiUtil.java
+src/main/java/com/openapi/generate/api/StudentApi.java
+src/main/java/com/openapi/generate/api/TeacherApi.java
+src/main/java/com/openapi/generate/model/Error.java
+src/main/java/com/openapi/generate/model/RequestStudentDto.java
+src/main/java/com/openapi/generate/model/RequestTeacherDto.java
+src/main/java/com/openapi/generate/model/ResponseStudentDto.java
+src/main/java/com/openapi/generate/model/ResponseTeacherDto.java

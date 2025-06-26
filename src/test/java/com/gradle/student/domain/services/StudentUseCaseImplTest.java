@@ -8,12 +8,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import com.gradle.student.application.dto.RequestDto;
-import com.gradle.student.application.dto.ResponseDto;
 import com.gradle.student.domain.model.StudentEntity;
 import com.gradle.student.domain.repository.StudentRepositoryReactive;
 import com.gradle.student.infrastructure.exception.types.StudentAlreadyExistsException;
 import com.gradle.student.infrastructure.util.StudentMapper;
+import com.openapi.generate.model.RequestStudentDto;
+import com.openapi.generate.model.ResponseStudentDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -28,9 +28,9 @@ class StudentUseCaseImplTest {
     @InjectMocks
     private StudentUseCaseImpl studentUseCaseImpl;
 
-    private RequestDto requestDto1;
-    private ResponseDto responseDto1;
-    private ResponseDto responseDto2;
+    private RequestStudentDto requestDto1;
+    private ResponseStudentDto responseDto1;
+    private ResponseStudentDto responseDto2;
 
     private StudentEntity student1;
     private StudentEntity student2;
@@ -39,18 +39,33 @@ class StudentUseCaseImplTest {
 
     @BeforeEach
     void setUp() {
-        requestDto1 = new RequestDto(null, "12345678",
-                "Juan", "Perez", true, OBJ_AGE);
+        requestDto1 = new RequestStudentDto()
+                .id(null)
+                .document("12345678")
+                .name("Juan")
+                .lastName("Perez")
+                .status(true)
+                .age(OBJ_AGE);
 
         student1 = new StudentEntity(1L, "12345678",
                 "Juan", "Perez", true, OBJ_AGE);
         student2 = new StudentEntity(2L, "12345679",
                 "Julia", "Valencia", true, OBJ_AGE);
 
-        responseDto1 = new ResponseDto(1L, "12345678",
-                "Juan", "Perez", true, OBJ_AGE);
-        responseDto2 = new ResponseDto(2L, "12345679",
-                "Julia", "Romano", true, OBJ_AGE);
+        responseDto1 = new ResponseStudentDto()
+                .id(1L)
+                .document("12345678")
+                .name("Juan")
+                .lastName("Perez")
+                .status(true)
+                .age(OBJ_AGE);
+        responseDto2 = new ResponseStudentDto()
+                .id(2L)
+                .document("12345678")
+                .name("Julia")
+                .lastName("Romano")
+                .status(true)
+                .age(OBJ_AGE);
     }
 
     @Test
@@ -68,7 +83,7 @@ class StudentUseCaseImplTest {
     @Test
     void testCreateStudent_WhenStudentDoesNotExist() {
         // Arrange
-        when(repositoryReactive.findByDocument(requestDto1.document())).thenReturn(Mono.empty());
+        when(repositoryReactive.findByDocument(requestDto1.getDocument())).thenReturn(Mono.empty());
         when(studentMapper.requestToStudent(requestDto1)).thenReturn(student1);
         when(repositoryReactive.save(student1)).thenReturn(Mono.just(student1));
         when(studentMapper.studentToResponse(student1)).thenReturn(responseDto1);
@@ -82,7 +97,7 @@ class StudentUseCaseImplTest {
     @Test
     void testCreateStudent_WhenStudentExists() {
         // Arrange
-        when(repositoryReactive.findByDocument(requestDto1.document())).thenReturn(Mono.just(student1));
+        when(repositoryReactive.findByDocument(requestDto1.getDocument())).thenReturn(Mono.just(student1));
 
         // Act & Assert
         StepVerifier.create(studentUseCaseImpl.createStudent(requestDto1))

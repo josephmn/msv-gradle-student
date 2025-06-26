@@ -80,7 +80,7 @@ Api creado para registro de estudiantes en MySQL, se ha desarrollado para 2 endp
 
     - Luego, en la terminal, ejecutar el siguiente comando para escribir los secretos en Vault:
       ```bash
-      vault kv put secret/msv-maven-student/prod @msv-maven-student.json
+      vault kv put secret/msv-gradle-student/prod @msv-gradle-student.json
       ```
 6. Ejecutar la aplicación:
    - Asegurarse de que el servidor de Vault esté en ejecución, deberias poder resolver la siguiente URL:
@@ -93,8 +93,7 @@ Api creado para registro de estudiantes en MySQL, se ha desarrollado para 2 endp
    
    - Ejecutar la aplicación desde tu IDE o usando Gradle:
      ```bash
-     ./gradlew build
-     ./gradlew bootRun
+     ./gradlew clean openApiGenerate build
      ```
 7. Probar los endpoints:
     - Para probar los endpoints, puedes usar Postman o cualquier cliente HTTP.

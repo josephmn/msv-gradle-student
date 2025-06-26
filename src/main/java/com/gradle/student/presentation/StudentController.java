@@ -2,16 +2,13 @@ package com.gradle.student.presentation;
 
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.gradle.student.application.dto.RequestDto;
-import com.gradle.student.application.dto.ResponseDto;
+import org.springframework.web.server.ServerWebExchange;
 import com.gradle.student.application.usecases.StudentUseCase;
-import jakarta.validation.Valid;
+import com.openapi.generate.api.StudentApi;
+import com.openapi.generate.model.RequestStudentDto;
+import com.openapi.generate.model.ResponseStudentDto;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -25,25 +22,28 @@ import reactor.core.publisher.Mono;
  * @since 2025-06-16
  */
 @RestController
-@RequestMapping("/api/v1/students")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Validated
-public class StudentController {
+public class StudentController implements StudentApi {
 
     private final StudentUseCase studentUseCase;
 
-    @GetMapping
-    public Mono<ResponseEntity<Flux<ResponseDto>>> getAllStudentsActives() {
+    @Override
+    public Mono<ResponseEntity<Flux<ResponseStudentDto>>> getAllStudentsActives(
+            ServerWebExchange exchange) {
         return Mono.just(ResponseEntity.ok(this.studentUseCase.getAllStudentsActives()))
-            .defaultIfEmpty(ResponseEntity.notFound().build());
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Mono<ResponseEntity<ResponseDto>> createStudent(@Valid @RequestBody RequestDto requestDto) {
-        return this.studentUseCase.createStudent(requestDto)
-            .map(responseDto -> ResponseEntity
-            .created(URI.create("/api/v1/students/"))
-                .body(responseDto))
-            .defaultIfEmpty(ResponseEntity.notFound().build());
+    @Override
+    public Mono<ResponseEntity<ResponseStudentDto>> createStudent(
+            Mono<RequestStudentDto> requestDto, ServerWebExchange exchange) {
+        return requestDto.flatMap(dto ->
+                this.studentUseCase.createStudent(dto)
+                        .map(responseDto -> ResponseEntity
+                                .created(URI.create("/api/v1/students/"))
+                                .body(responseDto))
+                        .defaultIfEmpty(ResponseEntity.notFound().build())
+        );
     }
 }

@@ -2,12 +2,12 @@ package com.gradle.student.domain.services;
 
 
 import org.springframework.stereotype.Service;
-import com.gradle.student.application.dto.RequestDto;
-import com.gradle.student.application.dto.ResponseDto;
 import com.gradle.student.application.usecases.StudentUseCase;
 import com.gradle.student.domain.repository.StudentRepositoryReactive;
 import com.gradle.student.infrastructure.exception.types.StudentAlreadyExistsException;
 import com.gradle.student.infrastructure.util.StudentMapper;
+import com.openapi.generate.model.RequestStudentDto;
+import com.openapi.generate.model.ResponseStudentDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -30,7 +30,7 @@ public class StudentUseCaseImpl implements StudentUseCase {
     private final StudentMapper studentMapper;
 
     @Override
-    public Flux<ResponseDto> getAllStudentsActives() {
+    public Flux<ResponseStudentDto> getAllStudentsActives() {
         log.info("Start execute method getAllStudentsActives");
         return repositoryReactive.findByStatusTrue()
                 .map(studentMapper::studentToResponse)
@@ -38,9 +38,9 @@ public class StudentUseCaseImpl implements StudentUseCase {
     }
 
     @Override
-    public Mono<ResponseDto> createStudent(RequestDto requestDto) {
+    public Mono<ResponseStudentDto> createStudent(RequestStudentDto requestDto) {
         log.info("Start execute method createStudent");
-        final String documentNumber = requestDto.document();
+        final String documentNumber = requestDto.getDocument();
         return repositoryReactive.findByDocument(documentNumber)
                 .flatMap(existingCustomer -> Mono.error(new StudentAlreadyExistsException(
                         "Student exists with document number: %s", documentNumber)))
@@ -50,7 +50,7 @@ public class StudentUseCaseImpl implements StudentUseCase {
                             .map(studentMapper::studentToResponse)
                             .doOnNext(customerAfter -> log.info("Student after create: {}", customerAfter));
                 }))
-                .cast(ResponseDto.class)
+                .cast(ResponseStudentDto.class)
                 .doOnTerminate(() -> log.info("Finished execute method createStudent"));
     }
 }

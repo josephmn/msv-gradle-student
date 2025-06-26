@@ -3,9 +3,9 @@ package com.gradle.student.infrastructure.util;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import com.gradle.student.application.dto.RequestDto;
-import com.gradle.student.application.dto.ResponseDto;
 import com.gradle.student.domain.model.StudentEntity;
+import com.openapi.generate.model.RequestStudentDto;
+import com.openapi.generate.model.ResponseStudentDto;
 
 /**
  * StudentMapper.
@@ -31,7 +31,7 @@ public interface StudentMapper {
         @Mapping(source = "status", target = "status"),
         @Mapping(source = "age", target = "age")
     })
-    StudentEntity requestToStudent(RequestDto request);
+    StudentEntity requestToStudent(RequestStudentDto request);
 
     /**
      * Maps a StudentEntity to a ResponseDto.
@@ -46,6 +46,6 @@ public interface StudentMapper {
         @Mapping(source = "status", target = "status"),
         @Mapping(source = "age", target = "age")
     })
-    ResponseDto studentToResponse(StudentEntity student);
+    ResponseStudentDto studentToResponse(StudentEntity student);
 
 }

@@ -71,9 +71,24 @@ class StudentControllerTest {
     @Test
     @DisplayName("method get all student actives test")
     void getAllStudentTest() {
-        when(studentUseCase.getAllStudentsActives()).thenReturn(studentResponseFlux);
+        when(studentUseCase.getAllStudents()).thenReturn(studentResponseFlux);
 
         webTestClient.get().uri(STUDENT_API)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ResponseStudentDto.class)
+                .hasSize(2)
+                .contains(responseDto1, responseDto2);
+
+        verify(studentUseCase).getAllStudents();
+    }
+
+    @Test
+    @DisplayName("method get all students actives test")
+    void getAllStudentsActivesTest() {
+        when(studentUseCase.getAllStudentsActives()).thenReturn(studentResponseFlux);
+
+        webTestClient.get().uri(STUDENT_API + "/actives")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(ResponseStudentDto.class)

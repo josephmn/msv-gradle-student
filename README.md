@@ -52,6 +52,21 @@ Api creado para registro de estudiantes en MySQL, se ha desarrollado para 2 endp
       ('66666666','Cristian','Dominguez',0,35),
       ('77777777','Ronaldo','Flores',1,40),
       ('88888888','Juan','Enrique',0,21);
+
+
+      CREATE TABLE teacher (
+         id INT AUTO_INCREMENT PRIMARY KEY,
+         document VARCHAR(15),
+         name VARCHAR(50),
+         last_name VARCHAR(50),
+         status BOOLEAN,
+         age int
+      );
+   
+      INSERT INTO teacher (document, name, last_name, status, age)
+      VALUES
+      ('45453245','Jhon','James',1,33),
+      ('46576543','Julian','Valdivieso',0,35);
       ```
 4. Instalar Vault para el almacenamiento de secretos:
    - Descargar e instalar Vault para su SO, desde [Vault](https://www.vaultproject.io/downloads).
@@ -68,7 +83,7 @@ Api creado para registro de estudiantes en MySQL, se ha desarrollado para 2 endp
       ```bash
       vault server --dev --dev-root-token-id="00000000-0000-0000-0000-000000000000"
       ```
-    - En la raiz del proyecto, crear un archivo llamado `msv-maven-student.json` y agregar el siguiente contenido:
+    - En la raiz del proyecto, crear un archivo llamado `msv-maven-student.json`, copiar el siguiente contenido y guardar los cambios:
       ```json
       {
         "spring.r2dbc.url": "r2dbc:mysql://localhost:3306/tu_base_de_datos",
@@ -95,21 +110,50 @@ Api creado para registro de estudiantes en MySQL, se ha desarrollado para 2 endp
      ```bash
      ./gradlew clean openApiGenerate build
      ```
-7. Probar los endpoints:
-    - Para probar los endpoints, puedes usar Postman o cualquier cliente HTTP.
-    - Para consultar los estudiantes activos, realiza una solicitud GET a:
-      ```cUrl
-      curl --location 'http://localhost:8082/api/v1/students'
-      ```
-    - Para registrar un nuevo estudiante, realiza una solicitud POST a:
-      ```cUrl
-      curl --location 'http://localhost:8082/api/v1/students' \
-      --header 'Content-Type: application/json' \
-      --data '{
-      "document": "99999999",
-      "name": "Enrique",
-      "lastName": "Flores",
-      "status": true,
-      "age": 33
-      }'
-      ```
+7. Ejecutar los endpoints:
+   - Para ejecutar los endpoints, puedes usar Postman o cualquier cliente HTTP.
+
+      - Para consultar todos los estudiantes, realiza una solicitud GET a:
+     ```cUrl
+     curl -X 'GET' \
+       'http://localhost:8082/api/v1/students' \
+     -H 'accept: application/json'
+     ```
+      - Para consultar los estudiantes activos, realiza una solicitud GET a:
+     ```cUrl
+     curl -X 'GET' \
+       'http://localhost:8082/api/v1/students/actives' \
+     -H 'accept: application/json'
+     ```
+      - Para registrar un nuevo estudiante, realiza una solicitud POST a:
+     ```cUrl
+     curl -X 'POST' \
+       'http://localhost:8082/api/v1/students' \
+       -H 'accept: application/json' \
+       -H 'Content-Type: application/json' \
+       -d '{
+       "document": "78653423",
+       "name": "Jhon",
+       "lastName": "James",
+       "status": true,
+       "age": 30
+     }'
+     ```
+      - Para consultar todos los profesores, realiza una solicitud GET a:
+     ```cUrl
+     curl -X 'GET' \
+       'http://localhost:8082/api/v1/teachers' \
+       -H 'accept: application/json'
+     ```
+      - Para registrar un nuevo teacher, realiza una solicitud POST a:
+     ```cUrl
+     curl -X 'POST' \
+       'http://localhost:8082/api/v1/teachers' \
+       -H 'accept: application/json' \
+       -H 'Content-Type: application/json' \
+       -d '{
+       "document": "45453245",
+       "name": "Jhon",
+       "lastName": "James"
+     }'
+     ```

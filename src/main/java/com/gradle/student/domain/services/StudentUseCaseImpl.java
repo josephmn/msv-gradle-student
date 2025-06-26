@@ -30,6 +30,14 @@ public class StudentUseCaseImpl implements StudentUseCase {
     private final StudentMapper studentMapper;
 
     @Override
+    public Flux<ResponseStudentDto> getAllStudents() {
+        log.info("Start execute method getAllStudents");
+        return repositoryReactive.findAll()
+                .map(studentMapper::studentToResponse)
+                .doOnTerminate(() -> log.info("Finished execute method getAllStudents"));
+    }
+
+    @Override
     public Flux<ResponseStudentDto> getAllStudentsActives() {
         log.info("Start execute method getAllStudentsActives");
         return repositoryReactive.findByStatusTrue()
